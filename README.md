@@ -28,21 +28,33 @@ A lightweight user-mode Windows process hiding tool written in C++ (x64) that hi
 
 ---
 
-### 2. Configure Processes to Hide (Optional)
+### 2. Configure Processes to Hide
 
-By default, the target processes configured to be hidden are defined in [`Process-Hider/process_hider/external/external.cpp`](Process-Hider/process_hider/external/external.cpp#L76-L100):
+You can specify which processes you want to hide directly in [`Process-Hider/process_hider/external/external.cpp`](Process-Hider/process_hider/external/external.cpp#L80-L93):
 
 ```cpp
+// 1. Set the total number of processes you want to hide
 param->process_count = 3;
 
-local_process_list[0] = sdk::wstring( xorstr( L"Process-Hider.exe" ) ).get_data( );
-local_process_list[1] = sdk::wstring( xorstr( L"Spotify.exe" ) ).get_data( );
-local_process_list[2] = sdk::wstring( xorstr( L"Discord.exe" ) ).get_data( );
+// 2. Allocate space for the list
+auto local_process_list = ( wchar_t** ) sdk::handler::allocate( sizeof( wchar_t* ) * param->process_count );
+
+// 3. Add the process names you want to hide here:
+local_process_list[0] = sdk::wstring( xorstr( L"Process-Hider.exe" ) ).get_data( ); // Process name to hide
+local_process_list[1] = sdk::wstring( xorstr( L"Spotify.exe" ) ).get_data( );       // Process name to hide
+local_process_list[2] = sdk::wstring( xorstr( L"Discord.exe" ) ).get_data( );       // Process name to hide
+/*local_process_list[2] = sdk::wstring( xorstr( L"DiscordCanary.exe" ) ).get_data();*/
 ```
 
-To hide any other executable (e.g., `notepad.exe`, `cheatengine-x86_64.exe`, your custom apps):
+#### How to add your own process:
 1. Open [`Process-Hider/process_hider/external/external.cpp`](Process-Hider/process_hider/external/external.cpp).
-2. Adjust `param->process_count` and modify the process names in `local_process_list`.
+2. Go to line **81** and increase `param->process_count` (e.g., set to `4` if adding 4 processes).
+3. Add or replace entries in `local_process_list` with the executable names of the processes you wish to hide:
+   ```cpp
+   local_process_list[3] = sdk::wstring( xorstr( L"YourProcessName.exe" ) ).get_data( );
+   ```
+4. Save the file and rebuild the solution.
+
 
 ---
 
